@@ -1,0 +1,108 @@
+ Criar o Banco de Dados
+CREATE DATABASE RestauranteDB;
+USE RestauranteDB;
+
+-- 2. Criar as Tabelas
+
+-- Tabela Clientes
+CREATE TABLE Clientes (
+    id_cliente INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    telefone VARCHAR(20),
+    email VARCHAR(100)
+);
+
+-- Tabela Mesas
+CREATE TABLE Mesas (
+    id_mesa INT AUTO_INCREMENT PRIMARY KEY,
+    numero_mesa INT NOT NULL,
+    capacidade INT NOT NULL
+);
+
+-- Tabela Pedidos
+CREATE TABLE Pedidos (
+    id_pedido INT AUTO_INCREMENT PRIMARY KEY,
+    id_cliente INT,
+    id_mesa INT,
+    data_pedido DATETIME,
+    total DECIMAL(10, 2),
+    FOREIGN KEY (id_cliente) REFERENCES Clientes(id_cliente),
+    FOREIGN KEY (id_mesa) REFERENCES Mesas(id_mesa)
+);
+
+-- Tabela Itens_Pedido
+CREATE TABLE Itens_Pedido (
+    id_item INT AUTO_INCREMENT PRIMARY KEY,
+    id_pedido INT,
+    descricao_item TEXT,
+    quantidade INT,
+    preco_unitario DECIMAL(10, 2),
+    FOREIGN KEY (id_pedido) REFERENCES Pedidos(id_pedido)
+);
+
+-- 3. Inserir Dados
+
+-- Inserir dados na tabela Clientes
+INSERT INTO Clientes (nome, telefone, email) VALUES 
+('João Silva', '1234-5678', 'joao.silva@example.com'),
+('Maria Oliveira', '2345-6789', 'maria.oliveira@example.com');
+
+-- Inserir dados na tabela Mesas
+INSERT INTO Mesas (numero_mesa, capacidade) VALUES 
+(1, 4),
+(2, 2),
+(3, 6);
+
+-- Inserir dados na tabela Pedidos
+INSERT INTO Pedidos (id_cliente, id_mesa, data_pedido, total) VALUES 
+(1, 1, '2024-09-01 19:00:00', 150.00),
+(2, 2, '2024-09-01 20:00:00', 80.00);
+
+-- Inserir dados na tabela Itens_Pedido
+INSERT INTO Itens_Pedido (id_pedido, descricao_item, quantidade, preco_unitario) VALUES 
+(1, 'Pizza Margherita', 1, 50.00),
+(1, 'Espaguete à Carbonara', 2, 25.00),
+(2, 'Hambúrguer', 1, 30.00),
+(2, 'Batata Frita', 2, 10.00);
+
+-- 4. Consultar Dados
+
+-- Listar todos os clientes
+SELECT * FROM Clientes;
+
+-- Listar todas as mesas
+SELECT * FROM Mesas;
+
+-- Listar todos os pedidos
+SELECT * FROM Pedidos;
+
+-- Mostrar todos os itens de um pedido específico e calcular o subtotal
+-- Substitua o valor 1 pelo ID do pedido desejado
+SELECT i.descricao_item, i.quantidade, i.preco_unitario, 
+       (i.quantidade * i.preco_unitario) AS subtotal
+FROM Itens_Pedido i
+JOIN Pedidos p ON i.id_pedido = p.id_pedido
+WHERE p.id_pedido = 1;
+
+-- Total do pedido
+SELECT total FROM Pedidos WHERE id_pedido = 1;
+
+-- 5. Atualizar Dados
+
+-- Atualizar informações de um cliente
+UPDATE Clientes
+SET telefone = '9999-9999', email = 'joao.novoemail@example.com'
+WHERE id_cliente = 1;
+
+-- Atualizar informações de uma mesa
+UPDATE Mesas
+SET capacidade = 5
+WHERE id_mesa = 1;
+
+-- 6. Deletar Dados
+
+-- Primeiro exclua os itens relacionados ao pedido
+DELETE FROM Itens_Pedido WHERE id_pedido = 1;
+
+-- Depois exclua o pedido
+DELETE FROM Pedidos WHERE id_pedido = 1;
